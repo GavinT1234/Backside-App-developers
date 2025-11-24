@@ -6,6 +6,8 @@ import {
     removeUser,
 } from '../services/userService.js';
 
+import bcrypt from 'bcrypt';
+
 export async function createUserHandler(req, res) {
     const { displayName, email, password } = req.body;
 

@@ -2,6 +2,11 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 
+import userRoutes from './routes/userRoutes.js';
+import offerRoutes from './routes/offerRoutes.js';
+import categoryRoutes from './routes/categoryRoutes.js';
+import itemRoutes from './routes/itemRoutes.js';
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors());
@@ -9,6 +14,12 @@ app.use(cors());
 app.use(morgan('tiny'));
 
 app.use(express.json());
+
+// Routes
+app.use('/api/users', userRoutes); 
+app.use('/api/offers', offerRoutes); 
+app.use('/api/categories', categoryRoutes); 
+app.use('/api/items', itemRoutes); 
 
 app.use((req, res, next) => {
   const err = new Error('Not Found');

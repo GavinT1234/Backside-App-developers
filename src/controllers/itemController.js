@@ -7,9 +7,9 @@ import {
 } from '../services/itemService.js';
 
 export async function createItemHandler(req, res) {
-    const { title, price, categoryId } = req.body;
+    const { title, price, categoryId, userId } = req.body;
 
-    const item = await createNewItem({ title, price, categoryId });
+    const item = await createNewItem({ title, price, categoryId, userId });
     res.status(201).json(item);
 }
 
@@ -31,12 +31,13 @@ export async function getAllItemsHandler(req, res) {
 
 export async function updateItemHandler(req, res) {
     const { id } = req.params;
-    const { title, price, categoryId } = req.body;
+    const { title, price, categoryId, userId } = req.body;
 
     const updates = {};
     if (title) updates.title = title;
     if (price) updates.price = price;
     if (categoryId) updates.categoryId = categoryId;
+    if (userId) updates.userId = userId;
 
     const item = await modifyItem(parseInt(id), updates);
     res.status(200).json(item);

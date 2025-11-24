@@ -1,14 +1,50 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../src/generated"
 }
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
-//enums
+model User {
+  id          Int     @id @default(autoincrement())
+  displayName String
+  email       String  @unique
+  password    String
+  items       Item[]
+  offers      Offer[]
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  items Item[]
+}
+
+model Item {
+  id         Int      @id @default(autoincrement())
+  title      String
+  price      Int
+  categoryId Int
+  userId     Int
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  offers     Offer[]
+}
+
+model Offer {
+  id     Int         @id @default(autoincrement())
+  amount Int
+  type   OfferType
+  status OfferStatus @default(pending)
+  itemId Int
+  userId Int
+  item   Item        @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 enum OfferType {
   purchase
   trade
@@ -18,49 +54,4 @@ enum OfferStatus {
   pending
   accepted
   declined
-}
-
-//models
-model User {
-  id            Int       @id @default(autoincrement())
-  displayName   String    
-  email         String    @unique
-  password      String    
-
-  items         Item[]
-  offers        Offer[]
-}
-
-model Category {
-  id            Int         @id @default(autoincrement())
-  name          String      @unique
-
-  items         Item[]
-}
-
-model Item {
-  id            Int         @id @default(autoincrement())
-  title         String      
-  price         Int
-  
-  categoryId    Int
-  category      Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-
-  userId        Int
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  offers        Offer[]
-}
-
-model Offer {
-  id            Int           @id @default(autoincrement())
-  amount        Int     
-  type          OfferType
-  status        OfferStatus   @default(pending)
-
-  itemId        Int
-  item          Item          @relation(fields: [itemId], references: [id], onDelete: Cascade)
-
-  userId        Int
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
