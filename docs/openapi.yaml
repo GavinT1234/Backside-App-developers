@@ -2,25 +2,733 @@ openapi: 3.1.0
 info:
   title: Final Project API
   version: 1.0.0
+  description: API for managing users, items, categories, and offers.
 servers:
   - url: http://localhost:3000
     description: Local development server
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        displayName:
+          type: string
+          example: "JohnDoe"
+        email:
+          type: string
+          example: "V4Z2a@example.com"
+      required:
+        - id
+        - displayName
+        - email
+
+    UserCreate:
+      type: object
+      properties:
+        email:
+          type: string
+          example: "V4Z2a@example.com"
+        password:
+          type: string
+          example: "securePassword123"
+        displayName:
+          type: string
+          example: "JohnDoe"
+      required:
+        - email
+        - password
+        - displayName
+
+    UserUpdate:
+      type: object
+      properties:
+        displayName:
+          type: string
+          example: "JohnDoeUpdated"
+      required:
+        - displayName
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Electronics"
+      required:
+        - id
+        - name
+
+    CategoryCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Electronics"
+      required:
+        - name
+
+    CategoryUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Updated Category"
+      required:
+        - name
+
+    Item:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "Sample Item"
+        price:
+          type: number
+          example: 100.00
+        categoryId:
+          type: integer
+          example: 3
+        userId:
+          type: integer
+          example: 5
+      required:
+        - id
+        - title
+        - price
+        - categoryId
+        - userId
+
+    ItemCreate:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Sample Item"
+        price:
+          type: number
+          example: 100.00
+        categoryId:
+          type: integer
+          example: 3
+        userId:
+          type: integer
+          example: 5
+      required:
+        - title
+        - price
+        - categoryId
+        - userId
+
+    ItemUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Updated Item"
+        price:
+          type: number
+          example: 120.00
+      required:
+        - title
+        - price
+
+    Offer:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        amount:
+          type: number
+          example: 250.00
+        type:
+          type: string
+          example: "bid"
+        status:
+          type: string
+          example: "pending"
+        itemId:
+          type: integer
+          example: 4
+        userId:
+          type: integer
+          example: 2
+      required:
+        - id
+        - amount
+        - type
+        - status
+        - itemId
+        - userId
+
+    OfferCreate:
+      type: object
+      properties:
+        amount:
+          type: number
+          example: 199.99
+        type:
+          type: string
+          example: "offer"
+        status:
+          type: string
+          example: "pending"
+        itemId:
+          type: integer
+          example: 3
+        userId:
+          type: integer
+          example: 7
+      required:
+        - amount
+        - type
+        - status
+        - itemId
+        - userId
+
+    OfferUpdate:
+      type: object
+      properties:
+        amount:
+          type: number
+          example: 210.00
+        type:
+          type: string
+          example: "counter-offer"
+        status:
+          type: string
+          example: "accepted"
+      required:
+        - amount
+        - type
+        - status
+
+    BadRequestError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "The request was invalid."
+        statusCode:
+          type: integer
+          example: 400
+        error:
+          type: string
+          example: "Bad Request"
+
+    UnauthorizedError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "You are not authorized to access this resource."
+        statusCode:
+          type: integer
+          example: 401
+        error:
+          type: string
+          example: "Unauthorized"
+
+    ForbiddenError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "You are not allowed to access this resource."
+        statusCode:
+          type: integer
+          example: 403
+        error:
+          type: string
+          example: "Forbidden"
+
+    NotFoundError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "The requested resource was not found."
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: "Not Found"
+
+security:
+  - BearerAuth: []
+
 paths:
   /users:
-    $ref: ./paths/users.yaml
-  /categories:
-    $ref: ./paths/categories.yaml
-  /items:
-    $ref: ./paths/items.yaml
-  /offers:
-    $ref: ./paths/offers.yaml
-  /categories/{id}:
-    $ref: ./paths/categoriesbyid.yaml
-  /items/{id}:
-    $ref: ./paths/itemsbyid.yaml
-  /offers/{id}:
-    $ref: ./paths/offersbyid.yaml
+    get:
+      summary: List all users
+      tags:
+        - Users
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+    post:
+      summary: Create a new user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+
   /users/{id}:
-    $ref: ./paths/usersbyid.yaml
-  
-  
+    get:
+      summary: Retrieve a single user by ID
+      tags:
+        - Users
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+    put:
+      summary: Update an existing user
+      tags:
+        - Users
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+    delete:
+      summary: Delete an existing user
+      tags:
+        - Users
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: User deleted successfully, no content returned
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+
+  /categories:
+    get:
+      summary: List all categories
+      tags:
+        - Categories
+      responses:
+        '200':
+          description: Categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+    post:
+      summary: Create a new category
+      tags:
+        - Categories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryCreate'
+      responses:
+        '201':
+          description: Category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+
+  /categories/{id}:
+    get:
+      summary: Retrieve category by ID
+      tags:
+        - Categories
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Category retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+    put:
+      summary: Update category by ID
+      tags:
+        - Categories
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryUpdate'
+      responses:
+        '200':
+          description: Category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+    delete:
+      summary: Delete category by ID
+      tags:
+        - Categories
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Category deleted successfully
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+
+  /items:
+    get:
+      summary: List all items
+      tags:
+        - Items
+      responses:
+        '200':
+          description: Items retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+    post:
+      summary: Create a new item
+      tags:
+        - Items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemCreate'
+      responses:
+        '201':
+          description: Item created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+
+  /items/{id}:
+    get:
+      summary: Retrieve item by ID
+      tags:
+        - Items
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Item retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+    put:
+      summary: Update item by ID
+      tags:
+        - Items
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemUpdate'
+      responses:
+        '200':
+          description: Item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+    delete:
+      summary: Delete item by ID
+      tags:
+        - Items
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Item deleted successfully
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+
+  /offers:
+    get:
+      summary: List all offers
+      tags:
+        - Offers
+      responses:
+        '200':
+          description: Offers retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Offer'
+    post:
+      summary: Create a new offer
+      tags:
+        - Offers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfferCreate'
+      responses:
+        '201':
+          description: Offer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+
+  /offers/{id}:
+    get:
+      summary: Retrieve offer by ID
+      tags:
+        - Offers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Offer retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+    put:
+      summary: Update offer by ID
+      tags:
+        - Offers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfferUpdate'
+      responses:
+        '200':
+          description: Offer updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+    delete:
+      summary: Delete offer by ID
+      tags:
+        - Offers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Offer deleted successfully
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'

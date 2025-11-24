@@ -1,7 +1,0 @@
-type: object
-properties:
-    name:
-      type: string
-      example: "John Doe"
-    required:
-      - name

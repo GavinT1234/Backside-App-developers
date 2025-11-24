@@ -7,6 +7,9 @@ import offerRoutes from './routes/offerRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import itemRoutes from './routes/itemRoutes.js';
 
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors());
@@ -14,6 +17,9 @@ app.use(cors());
 app.use(morgan('tiny'));
 
 app.use(express.json());
+
+const specs = YAML.load('./docs/openapi.yaml');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 // Routes
 app.use('/api/users', userRoutes); 
