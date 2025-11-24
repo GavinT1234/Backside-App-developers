@@ -1,0 +1,30 @@
+get:
+  summary: list all items
+  tags:
+    - Items
+  responses:
+    '200':
+      description: Items retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/Item.yaml
+post:
+  summary: Create a new item
+  tags:
+    - Items
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/ItemCreate.yaml
+  responses:
+    '201':
+      description: Item created successfully
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/Item.yaml
