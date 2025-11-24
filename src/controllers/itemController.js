@@ -33,6 +33,11 @@ export async function updateItemHandler(req, res) {
     const { id } = req.params;
     const { title, price, categoryId, userId } = req.body;
 
+    const i = await getItemById(parseInt(id));
+    if (!i) {
+        return res.status(404).json({ error: 'Item not found' });
+    }
+
     const updates = {};
     if (title) updates.title = title;
     if (price) updates.price = price;

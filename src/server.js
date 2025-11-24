@@ -21,6 +21,14 @@ app.use('/api/offers', offerRoutes);
 app.use('/api/categories', categoryRoutes); 
 app.use('/api/items', itemRoutes); 
 
+
+app.use((err, req, res, next) => {
+  if (err.status === 400) {
+      return res.status(400).json({ error: 'Bad Request', message: err.message });
+  }
+  next(err);
+});
+
 app.use((req, res, next) => {
   const err = new Error('Not Found');
   err.status = 404;
@@ -28,13 +36,18 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  console.log(err.stack);
-  if (!err.status) {
-    console.log(err.stack);
-    err.status = 500;
-    err.message = 'Internal Server Error';
+  if (err.name === 'PrismaClientValidationError') {
+      return res.status(400).json({
+          error: 'Validation Error',
+          message: err.message,
+      });
   }
-  res.status(err.status).json({ error: err.message });
+
+  // Handle other errors
+  res.status(500).json({
+      error: 'Internal Server Error',
+      message: err.message,
+  });
 });
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

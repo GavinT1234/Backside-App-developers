@@ -37,6 +37,11 @@ export async function updateUserHandler(req, res) {
     const { id } = req.params;
     const { displayName, email, password } = req.body;
 
+    const u = await getUserById(parseInt(id));
+    if (!u) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+
     const updates = {};
     if (displayName) updates.displayName = displayName;
     if (email) updates.email = email;

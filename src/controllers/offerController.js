@@ -33,6 +33,11 @@ export async function updateOfferHandler(req, res) {
     const { id } = req.params;
     const { amount, type, status } = req.body;
 
+    const o = await getOfferById(parseInt(id));
+    if (!o) {
+        return res.status(404).json({ error: 'Offer not found' });
+    }
+
     const updates = {};
     if (amount) updates.amount = amount;
     if (type) updates.type = type;
