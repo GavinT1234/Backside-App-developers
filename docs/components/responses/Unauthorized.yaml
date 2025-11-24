@@ -1,0 +1,12 @@
+description: Unathorized access
+content:
+  application/json:
+    schema:
+      $ref: ../components/schemas/UnauthorizedError.yaml
+    examples:
+      UnauthorizedError:
+        summary: Unauthorized access
+        value:
+          message: "You are not authorized to access this resource."
+          statusCode: 401
+          error: "Unauthorized"

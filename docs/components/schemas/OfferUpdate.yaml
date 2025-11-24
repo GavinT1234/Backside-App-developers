@@ -1,0 +1,11 @@
+type: object
+properties:
+  amount:
+    type: number
+    example: 210.00
+  type:
+    type: string
+    example: "counter-offer"
+  status:
+    type: string
+    example: "accepted"

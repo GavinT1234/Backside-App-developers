@@ -1,0 +1,12 @@
+description: not found
+content:
+  application/json:
+    schema:
+      $ref: ../components/schemas/NotFoundError.yaml
+    examples:
+      NotFoundError:
+        summary: Resource not found
+        value:
+          message: "The requested resource was not found."
+          statusCode: 404
+          error: "Not Found"

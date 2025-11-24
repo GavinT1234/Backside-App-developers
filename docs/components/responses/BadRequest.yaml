@@ -1,0 +1,12 @@
+description: bad request
+content:
+  application/json:
+    schema:
+      $ref: ../components/schemas/BadRequestError.yaml
+    examples:
+      BadRequestError:
+        summary: Bad request
+        value:
+          message: "The request was invalid."
+          statusCode: 400
+          error: "Bad Request"
