@@ -1,0 +1,33 @@
+get:
+  summary: List all offers
+  tags:
+    - Offers
+  responses:
+    '200':
+      description: Offers retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/Offer.yaml
+
+post:
+  summary: Create a new offer
+  tags:
+    - Offers
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/OfferCreate.yaml
+  responses:
+    '201':
+      description: Offer created successfully
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/Offer.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml

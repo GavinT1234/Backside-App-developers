@@ -1,0 +1,17 @@
+type: object 
+properties:
+  title:
+    type: string
+    example: "Sample Item"
+  price:
+    type: number  
+    example: 100.00
+  categoryId:
+    type: integer
+    example: 3
+  required:
+    - title
+    - price
+    - categoryId
+    - userId
+     
