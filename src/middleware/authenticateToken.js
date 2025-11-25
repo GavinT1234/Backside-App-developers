@@ -1,14 +1,39 @@
-import express from 'express';
-import { authenticateToken } from '../middleware/authenticateToken.js';
+// middleware/authenticateToken.js
+import jwt from "jsonwebtoken";
+import prisma from "../prisma/client.js";
+export const authenticateToken = async (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).json({ message: "Unauthorized: No token provided" });
+        }
 
-const router = express.Router();
+        const token = authHeader.split(" ")[1];
+        if (!token) {
+            return res.status(401).json({ message: "Unauthorized: Invalid token format" });
+        }
 
-router.use(authenticateToken);
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (err) {
+            return res.status(403).json({ message: "Forbidden: Invalid token" });
+        }
 
-// Your protected routes here
-router.post('/', (req, res) => {
-  // Access the authenticated user from `req.user`
-  res.json({ message: 'Protected resource' });
-});
+        const user = await prisma.user.findUnique({
+            where: { id: decoded.userId },
+        });
 
-export default router;
+        if (!user) {
+            return res.status(401).json({ message: "Unauthorized: User not found" });
+        }
+
+        req.user = user; 
+        next();
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+export default authenticateToken;
