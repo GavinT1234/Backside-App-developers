@@ -11,4 +11,4 @@ router.post('/', (req, res) => {
   res.json({ message: 'Protected resource' });
 });
 
-export default router;
+export default authenticateToken;

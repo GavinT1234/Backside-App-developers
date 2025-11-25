@@ -15,7 +15,7 @@ import { authenticateToken } from '../middleware/authenticateToken.js';
 
 const router = express.Router();
 
-router.use(authRouter); // Add the authentication router before defining your category routes
+router.use(authRouter); 
 
 router.post('/', authenticateToken, validatePayload(categoryValidationSchema), handleValidationErrors, createCategoryHandler);
 router.get('/:id', authenticateToken, getCategoryHandler);

@@ -11,8 +11,7 @@ import { validatePayload } from '../middleware/validatePayload.js';
 import { itemValidationSchema } from '../middleware/validatePayload.js';
 
 import authRouter from './authRoutes.js';
-import { authenticateToken } from '../middleware/authenticateToken.js'; // Assuming you have an authenticateToken middleware
-
+import { authenticateToken } from '../middleware/authenticateToken.js';
 const router = express.Router();
 
 router.use(authRouter); // Add the authentication router before defining your item routes
