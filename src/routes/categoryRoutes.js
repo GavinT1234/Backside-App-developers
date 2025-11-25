@@ -10,6 +10,7 @@ import { handleValidationErrors } from '../middleware/handleValidationErrors.js'
 import { validatePayload } from '../middleware/validatePayload.js';
 import { categoryValidationSchema } from '../middleware/validatePayload.js';
 
+
 const router = express.Router();
 
 router.post('/', validatePayload(categoryValidationSchema), handleValidationErrors, createCategoryHandler); 
