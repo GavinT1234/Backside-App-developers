@@ -10,12 +10,17 @@ import { handleValidationErrors } from '../middleware/handleValidationErrors.js'
 import { validatePayload } from '../middleware/validatePayload.js';
 import { itemValidationSchema } from '../middleware/validatePayload.js';
 
+import authRouter from './authRoutes.js';
+import { authenticateToken } from '../middleware/authenticateToken.js'; // Assuming you have an authenticateToken middleware
+
 const router = express.Router();
 
-router.post('/', validatePayload(itemValidationSchema), handleValidationErrors, createItemHandler);
-router.get('/:id', getItemHandler); 
-router.get('/', getAllItemsHandler);
-router.put('/:id', validatePayload(itemValidationSchema), handleValidationErrors, updateItemHandler); 
-router.delete('/:id', deleteItemHandler); 
+router.use(authRouter); // Add the authentication router before defining your item routes
+
+router.post('/', authenticateToken, validatePayload(itemValidationSchema), handleValidationErrors, createItemHandler);
+router.get('/:id', authenticateToken, getItemHandler); 
+router.get('/', authenticateToken, getAllItemsHandler);
+router.put('/:id', authenticateToken, validatePayload(itemValidationSchema), handleValidationErrors, updateItemHandler); 
+router.delete('/:id', authenticateToken, deleteItemHandler); 
 
 export default router;
