@@ -1,7 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import prisma from '.../prisma/client.js';
+import prisma from '../config/db.js';
 const authRouter = express.Router();
 authRouter.post('/login', async (req, res) => {
     try {
@@ -21,4 +21,25 @@ authRouter.post('/login', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 })
+authRouter.post('/register', async (req, res) => {
+    try {
+        const { email, password, name } = req.body; 
+        const existingUser = await prisma.user.findUnique({ where: { email } });
+        if (existingUser) {
+            return res.status(409).json({ message: 'User already exists' });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = await prisma.user.create({
+            data: {
+                email,  
+                password: hashedPassword,
+                name,
+            },
+        });
+        res.status(201).json({ id: newUser.id, email: newUser.email, name: newUser.name });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 export default authRouter;

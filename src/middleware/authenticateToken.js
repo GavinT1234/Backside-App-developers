@@ -1,7 +1,6 @@
 // middleware/authenticateToken.js
 import jwt from "jsonwebtoken";
-import prisma from "../prisma/client.js"; // no curly braces if default export
-
+import prisma from '../config/db.js';
 export const authenticateToken = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
@@ -9,7 +8,6 @@ export const authenticateToken = async (req, res, next) => {
             return res.status(401).json({ message: "Unauthorized: No token provided" });
         }
 
-        // Expected format: "Bearer <token>"
         const token = authHeader.split(" ")[1];
         if (!token) {
             return res.status(401).json({ message: "Unauthorized: Invalid token format" });
@@ -30,7 +28,7 @@ export const authenticateToken = async (req, res, next) => {
             return res.status(401).json({ message: "Unauthorized: User not found" });
         }
 
-        req.user = user; // attach user to request
+        req.user = user; 
         next();
     } catch (error) {
         console.error(error);
